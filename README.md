@@ -1,5 +1,3 @@
-# Rim73 1.4
-
 Update of Ghost_Rolly mod
 https://steamcommunity.com/sharedfiles/filedetails/?id=2573814850
 https://github.com/GhostRolly/rim73

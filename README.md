@@ -28,13 +28,8 @@ But personally, I had a lot of fun while tweaking this mod, and I'm sure someone
 
 #### Features:
 
-- Rim73 Features
--- Pawn_HealthTracker
--- Verse.AI.Pawn_JobTracker
--- Verse.AI.Pawn_PathFollower
-
-- My Practice Features
--- Verse.Pawn Patch (Super Easy/Dumb)
+- Rim73 Features : Pawn_HealthTracker -- Verse.AI.Pawn_JobTracker -- Verse.AI.Pawn_PathFollower
+- My Practice Features : Verse.Pawn Patch (Super Easy/Dumb)
 
 #### FAQ:
 

@@ -8,6 +8,15 @@ using System.Runtime.CompilerServices;
 using Verse.AI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections;
+using static UnityEngine.ParticleSystem;
+using System.IO;
+using System.Net.NetworkInformation;
+using UnityEngine.Profiling;
+using RimWorld.Planet;
+using Verse.Sound;
+using Mono.Unix.Native;
 
 namespace Rim73
 {
@@ -95,7 +104,7 @@ namespace Rim73
 
             public static void PrintResults()
             {
-                if(LastDisplayed != Find.TickManager.TicksGame)
+                if (LastDisplayed != Find.TickManager.TicksGame)
                 {
                     foreach (KeyValuePair<string, int> item in ToilAnalysis.OrderBy(key => key.Value))
                     {
@@ -114,7 +123,7 @@ namespace Rim73
                     return;
 
                 pawn.ClearReservationsForJob(instance.curJob);
-                
+
                 if (instance.curDriver != null)
                 {
                     instance.curDriver.ended = true;
@@ -126,15 +135,17 @@ namespace Rim73
                 instance.curJob = (Job)null;
                 pawn.VerifyReservations();
                 pawn.stances.CancelBusyStanceSoft();
-                
-                if (!pawn.Destroyed && pawn.ShouldDropCarriedThingAfterJob(curJob))
-                {
-                    Thing _ = null;
-                   pawn.carryTracker.TryDropCarriedThing(pawn.Position, ThingPlaceMode.Near, out _);
-                }
-                
+
+                //if (!pawn.Destroyed && pawn.ShouldDropCarriedThingAfterJob(curJob))
+                // {
+                //    Thing _ = null;
+                //  pawn.carryTracker.TryDropCarriedThing(pawn.Position, ThingPlaceMode.Near, out _);
+                //}
+
                 JobMaker.ReturnToPool(curJob);
             }
+
+            
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static LocalTargetInfo RandomWanderPos(ref Pawn ___pawn)
@@ -142,16 +153,20 @@ namespace Rim73
                 return RCellFinder.RandomWanderDestFor(___pawn, ___pawn.Position, 12, (Pawn x, IntVec3 a, IntVec3 b) => { return true; }, Danger.None);
             }
 
-            static bool Prefix(ref Verse.AI.Pawn_JobTracker __instance, Pawn ___pawn)
+            static bool Prefix(ref Verse.AI.Pawn_JobTracker __instance, ref Pawn ___pawn)
             {
                 if (Rim73_Settings.jobs)
-                {
+                {   
                     if (___pawn.health.State == PawnHealthState.Dead)
                         return false;
 
+                    
                     // Drafted and Enemies skipped
                     if (___pawn.mindState.anyCloseHostilesRecently)
+                    {
                         return true;
+                    }
+                        
 
                     // Hash
                     UInt64 jobHashCode = __instance.curJob != null ? CalculateHash(__instance.curJob.def.defName) : 0;
@@ -162,10 +177,12 @@ namespace Rim73
 
                     // Manual checks, this prevents from getting TicksGame from memory again and again
                     int thingId = ___pawn.thingIDNumber;
-                    int ticks = Rim73.Ticks;
+                    int ticks = Find.TickManager.TicksGame;
                     int hash = thingId + ticks;
-                    bool isTickingHash = (hash % 120 == 0);
+                    bool isTickingHash = ((hash % 120) == 0);
                     bool isLikelyAnimal = ___pawn.Faction == null;
+
+                    //Log.Warning(thingId.ToString() + "," + ticks.ToString() + "," + hash.ToString());
 
                     // Melee skip
                     if (jobHashCode == Job_AttackMelee)
@@ -175,13 +192,14 @@ namespace Rim73
                     }
 
                     // Animals, ticks really slow
-                    if (isLikelyAnimal) {
+                    if (isLikelyAnimal)
+                    {
 
                         // Once every odd 500 ticks, search for a new job
                         if ((((hash & 540) == 540) && (hash & 1) == 0) && hash % 30 == 0)
                             return true;
 
-                        if ((jobHashCode == Job_Wait || jobHashCode == Job_Wait_MaintainPosture) && (hash & (512-1)) == 0)
+                        if ((jobHashCode == Job_Wait || jobHashCode == Job_Wait_MaintainPosture) && (hash & (512 - 1)) == 0)
                         {
                             CleanupCurrentJob(ref ___pawn, ref __instance);
                             __instance.StartJob(JobMaker.MakeJob(JobDefOf.GotoWander, RandomWanderPos(ref ___pawn)), cancelBusyStances: false);
@@ -236,13 +254,17 @@ namespace Rim73
                             }
 
                             return false;
-                        } else if (jobHashCode == Job_Wait_MaintainPosture || jobHashCode == Job_GotoWander)
+                        }
+                        else if (jobHashCode == Job_Wait_MaintainPosture || jobHashCode == Job_GotoWander)
                         {
                             // Wait and Wait_MaintainPosture
                             return isTickingHash;
-                        } else if (jobHashCode == Job_Goto) {
+                        }
+                        else if (jobHashCode == Job_Goto)
+                        {
                             return (___pawn.drafter != null && ___pawn.drafter.Drafted) ? true : false;
-                        } else if (
+                        }
+                        else if (
                          jobHashCode == Job_FinishFrame ||
                          jobHashCode == Job_CutPlant ||
                          jobHashCode == Job_Sow ||
@@ -262,7 +284,8 @@ namespace Rim73
                          jobHashCode == Job_HaulToCell ||
                          jobHashCode == Job_HaulToContainer ||
                          jobHashCode == Job_PrepareCaravan_GatherItems
-                      ) {
+                      )
+                        {
                             // * NO SKIP JOBS *
                             // While doing these short jobs, pawns don't need to do any kind of checks
                             // We skip a lot of things.
@@ -276,7 +299,9 @@ namespace Rim73
                                 Rim73.JobTracker_TryFindAndStartJob_FastInvoke(__instance, null);
                                 return true;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             return true;
                         }
                     }
@@ -291,61 +316,173 @@ namespace Rim73
 
                     // SKIP
                     return jobHashCode == Job_None ? true : false;
-                } else {
+                }
+                else
+                {
                     return true;
                 }
             }
         }
 
-        [HarmonyPatch(typeof(Verse.AI.JobDriver), "CheckCurrentToilEndOrFail", new Type[] { })]
-        static class JobDriverTick
+        [HarmonyPatch(typeof(Verse.ThingWithComps), "Tick")]
+        class Patch
         {
-            static bool Prefix(ref Verse.AI.JobDriver __instance, ref bool __result)
+            [HarmonyReversePatch]
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public static void Tick(Verse.ThingWithComps __instance)
             {
-                if (Rim73_Settings.jobs)
-                {
-                    Job job = __instance.job;
-                    if (job == null)
-                    {
-                        __result = false;
-                        return false;
-                    }
-
-                    // If enemy then skip
-                    if (__instance.pawn.mindState.anyCloseHostilesRecently)
-                        return true;
-
-                    //int ticks = Find.TickManager.TicksGame;
-                    int ticks = Rim73.Ticks;
-                    int thingId = __instance.pawn.thingIDNumber;
-                    string jobTypeName = job.def.defName;
-                    UInt64 jobHashCode = CalculateHash(jobTypeName);
-
-                    // We're gonna take every single bit of optimisations we can here
-                    if (((ticks + thingId) & (16-1)) == 0 ||
-                        jobHashCode == Job_Goto ||
-                        jobHashCode == Job_Clean ||
-                        jobHashCode == Job_CutPlant ||
-                        jobHashCode == Job_Harvest ||
-                        jobHashCode == Job_HarvestDesignated ||
-                        jobHashCode == Job_SpectateCeremony ||
-                        jobHashCode == Job_StandAndBeSociallyActive ||
-                        jobHashCode == Job_GiveSpeech ||
-                        jobHashCode == Job_MarryAdjacentPawn ||
-                        jobHashCode == Job_CutPlantDesignated ||
-                        jobHashCode == Job_Ingest ||
-                        jobHashCode == Job_AttackMelee
-                    )
-                    {
-                        return true;
-                    }
-
-                    __result = false;
-                    return false;
-                }
-
-                return true;
+                __instance.Tick();
             }
         }
+
+
+        [HarmonyPatch(typeof(Verse.Pawn), "Tick", new Type[] { })]
+        static class PawnTick
+        {
+            static bool Prefix(ref Verse.Pawn __instance, ref Verse.Pawn_DrawTracker ___drawer, ref Verse.Sound.Sustainer ___sustainerAmbient)
+            {
+                if (__instance.Faction == Faction.OfPlayer || __instance.IsWorldPawn() || __instance.mindState.anyCloseHostilesRecently || (!Rim73_Settings.enemies))
+                   return true;
+
+                Verse.ThingWithComps __base = __instance;
+
+
+                if (DebugSettings.noAnimals && __base.Spawned && __instance.RaceProps.Animal)
+                {
+                    __instance.Destroy();
+                    return false;
+                }
+                Patch.Tick(__instance);
+                if (Find.TickManager.TicksGame % 250 == 0)
+                    __instance.TickRare();
+                bool suspended;
+                using (new ProfilerBlock("Suspended"))
+                {
+                    suspended = __instance.Suspended;
+                }
+                if (!suspended)
+                {
+                    // 길찾기
+                    if (__base.Spawned)
+                    {
+                        __instance.pather.PatherTick();
+                        __instance.stances.StanceTrackerTick();
+                        __instance.verbTracker.VerbsTick();
+                        __instance.roping.RopingTick();
+                        __instance.natives.NativeVerbsTick();
+                    }
+                    if (!__instance.IsWorldPawn())
+                    {
+                        __instance.jobs?.JobTrackerTick();
+                    }
+                    __instance.health.HealthTick();
+                    if (!__instance.Dead)
+                    {
+                        __instance.mindState.MindStateTick();
+                        __instance.carryTracker.CarryHandsTick();
+                        if (__instance.showNamePromptOnTick != -1 && __instance.showNamePromptOnTick == Find.TickManager.TicksGame)
+                        {
+                            Find.WindowStack.Add(__instance.NamePawnDialog());
+                        }
+                    }
+                }
+                //if (!__instance.Dead)
+                //{
+                //    __instance.needs.NeedsTrackerTick();
+                //}
+                if (!suspended)
+                {
+                    if (__instance.equipment != null)
+                    {
+                        //__instance.equipment.EquipmentTrackerTick();
+                    }
+                    if (__instance.apparel != null)
+                    {
+                        //__instance.apparel.ApparelTrackerTick();
+                    }
+                    //if (__instance.interactions != null && __base.Spawned)
+                    //{
+                    //    __instance.interactions.InteractionsTrackerTick();
+                    //}
+                    if (__instance.caller != null)
+                    {
+                        __instance.caller.CallTrackerTick();
+                    }
+                    if (__instance.skills != null)
+                    {
+                        //__instance.skills.SkillsTick();
+                    }
+                    if (__instance.abilities != null)
+                    {
+                        //__instance.abilities.AbilitiesTick();
+                    }
+                    if (__instance.inventory != null)
+                    {
+                        //__instance.inventory.InventoryTrackerTick();
+                    }
+                    // 소집 컨트롤러
+                    if (__instance.drafter != null)
+                    {
+                        //__instance.drafter.DraftControllerTick();
+                    }
+                    //if (__instance.relations != null)
+                    //{
+                    //    __instance.relations.RelationsTrackerTick();
+                    //}
+                    if (ModsConfig.RoyaltyActive && __instance.psychicEntropy != null)
+                    {
+                        //__instance.psychicEntropy.PsychicEntropyTrackerTick();
+                    }
+                    if (__instance.RaceProps.Humanlike)
+                    {
+                        //__instance.guest.GuestTrackerTick();
+                    }
+                    //if (__instance.ideo != null)
+                    //{
+                    //    __instance.ideo.IdeoTrackerTick();
+                    //}
+                    if (__instance.genes != null)
+                    {
+                        //__instance.genes.GeneTrackerTick();
+                    }
+                    // 로얄티 작위 트래커
+                    if (__instance.royalty != null && ModsConfig.RoyaltyActive)
+                    {
+                        //__instance.royalty.RoyaltyTrackerTick();
+                    }
+                    // 방 스타일 보기
+                    //if (__instance.style != null && ModsConfig.IdeologyActive)
+                    //{
+                    //    __instance.style.StyleTrackerTick();
+                    //}
+                    //if (__instance.styleObserver != null && ModsConfig.IdeologyActive)
+                    //{
+                    //    __instance.styleObserver.StyleObserverTick();
+                    //}
+                    //if (__instance.surroundings != null && ModsConfig.IdeologyActive)
+                    //{
+                    //    __instance.surroundings.SurroundingsTrackerTick();
+                    //}
+                    //if (ModsConfig.BiotechActive && __instance.learning != null)
+                    //{
+                    //    __instance.learning.LearningTick();
+                    //}
+                    if (ModsConfig.BiotechActive)
+                    {
+                        PollutionUtility.PawnPollutionTick(__instance);
+                        GasUtility.PawnGasEffectsTick(__instance);
+                    }
+                    //__instance.ageTracker.AgeTick();
+                    __instance.records.RecordsTick();
+                }
+                //__instance.guilt?.GuiltTrackerTick();
+                ___sustainerAmbient?.Maintain();
+                ___drawer?.renderer.EffectersTick(suspended || __instance.IsWorldPawn());
+
+                return false;
+            }
+
+        }
+
     }
 }

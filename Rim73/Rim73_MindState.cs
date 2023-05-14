@@ -51,18 +51,19 @@ namespace Rim73
                     // This function is only called here : Pawn_MindState
                     // if (GenLocalDate.DayTick((Thing) this.pawn) != 0)
                     // This takes about 20% of processing time, and frankly is overkill for just counting the amount of interactions per day
-                    //__result = Rim73.Ticks % 60000;
+                    //__result = Find.TickManager.TicksGame % 60000;
                     // Further simplification, every 65,000 ticks we reset the interactions
                     // Players doesn't see a difference but he will feel the ticking
-                    __result = Rim73.Ticks;
+                    __result = Find.TickManager.TicksGame;
                     return false;
                 }
 
                 return true;
             }
         }
-
-        [HarmonyPatch(typeof(PawnUtility), "EnemiesAreNearby", new Type[] { typeof(Pawn), typeof(int), typeof(bool) })]
+        /*
+         
+         [HarmonyPatch(typeof(PawnUtility), "EnemiesAreNearby", new Type[] { typeof(Pawn), typeof(int), typeof(bool) })]
         static class EnemiesNearbyTick
         {
             static bool Prefix(ref Pawn pawn, ref int regionsToScan, ref bool passDoors, ref bool __result)
@@ -115,6 +116,8 @@ namespace Rim73
                 }
             }
         }
+         */
+
 
     }
 }

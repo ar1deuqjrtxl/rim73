@@ -57,12 +57,12 @@ namespace Rim73
                 // skip the dead and downed
                 if (___pawn.health.State != PawnHealthState.Mobile)
                     return false;
-                
+
                 if (___pawn.mindState.anyCloseHostilesRecently && ___pawn.Faction != Faction.OfPlayer)
                 {
-                    //int currTicks = Find.TickManager.TicksGame;
-                    int currTicks = Rim73.RealTicks;
-                    
+                    int currTicks = Find.TickManager.TicksGame;
+                    //int currTicks = Rim73.RealTicks;
+
                     // Sleeping for 80 ticks, fail-safe for Pawns who are moving and/or are fleeing
                     if (___foundPathWhichCollidesWithPawns + 60 > currTicks && !__instance.MovedRecently(40) && ___pawn.mindState.mentalStateHandler.CurStateDef != MentalStateDefOf.PanicFlee)
                         return false;
@@ -91,7 +91,7 @@ namespace Rim73
             }
         }
 
-
+        //checked
         [HarmonyPatch(typeof(RegionListersUpdater), "DeregisterInRegions", new Type[] { typeof(Thing), typeof(Map) })]
         static class RegionDeregesiterPatch
         {
@@ -114,7 +114,7 @@ namespace Rim73
 
                     if (!sameRegion)
                         RegionCache[thingId] = curRegion;
-                    
+
                     return !sameRegion;
                 }
                 else
@@ -125,6 +125,7 @@ namespace Rim73
             }
         }
 
+        //checked
         [HarmonyPatch(typeof(RegionListersUpdater), "RegisterInRegions", new Type[] { typeof(Thing), typeof(Map) })]
         static class RegionRegesiterPatch
         {
@@ -150,7 +151,8 @@ namespace Rim73
                 {
                     // Skip if still in same region
                     return RegionCache[thingId] != curRegion;
-                } else
+                }
+                else
                 {
                     return true;
                 }

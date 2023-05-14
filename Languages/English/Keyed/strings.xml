@@ -13,6 +13,7 @@
 	<rim73_mindstate>Enable mindstate optimisations</rim73_mindstate>
 	<rim73_regionCache>Enable pather Region Caching system (experimental)</rim73_regionCache>
 	<rim73_enemiesNearbyCache>Enable enemies nearby caching system (experimental)</rim73_enemiesNearbyCache>
+	<rim73_enemies>Enable enemy ticking system boost (experimental)</rim73_enemies>
 	<rim73_superSpeed>Enable Warp Speed</rim73_superSpeed>
 	
 	<rim73_hediff_note>This optimises the hediffs and health ticks by reducing time it takes and improving memory caching.</rim73_hediff_note>
@@ -23,6 +24,7 @@
 	<rim73_mindstate_note>Enable Mindstate optimisations, this changes the way we calculate interactions per day.</rim73_mindstate_note>
 	<rim73_regionCache_note>Enables the Region Caching System which makes it so that we don't update the region system unless the pawn has actually changed region.</rim73_regionCache_note>
 	<rim73_enemiesNearbyCache_note>Enables Caching for Enemies nearby, meaning if one pawn of a group of raider is close to an enemy, all the others will consider it the case, without actually having to scan for nearby enemies.</rim73_enemiesNearbyCache_note>
+	<rim73_enemies_note>Forcibly overwrites the enemy's ticking system to speed it up. Most functions other than enemy pawn attacks are disabled.</rim73_enemies_note>
 	<rim73_superSpeed_note>Enables Super Warp Speed and on speed 4 reach up to 9000 ticks per second. WARNING: this is fast. Requires reload to take effect. If you're using SmartSpeed mod, this setting doesn't need reloading and the speed is limited to 1200 ticks.</rim73_superSpeed_note>
 	
 </LanguageData>

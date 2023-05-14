@@ -40,25 +40,25 @@ namespace Rim73
 
         public enum HediffCompProps
         {
-            HediffCompProperties_None =                     0x0,
-            HediffCompProperties_Disappears =               0x01, // 1
-            HediffCompProperties_TendDuration =             0x02, // 2
-            HediffCompProperties_Immunizable =              0x04, // 4
-            HediffCompProperties_Discoverable =             0x08, // 8
+            HediffCompProperties_None = 0x0,
+            HediffCompProperties_Disappears = 0x01, // 1
+            HediffCompProperties_TendDuration = 0x02, // 2
+            HediffCompProperties_Immunizable = 0x04, // 4
+            HediffCompProperties_Discoverable = 0x08, // 8
             /* HediffCompProperties_Effecter =              0x10, // This is ticked every time anyways by the DrawTrackerTick in Pawn_DrawTracker... Skipping */
-            HediffCompProperties_SeverityPerDay =           0x10,
+            HediffCompProperties_SeverityPerDay = 0x10,
             /* HediffCompProperties_DrugEffectFactor =      0x0, // This doesn't get ticked, only called by Chemical */
-            HediffCompProperties_HealPermanentWounds =      0x20,
+            HediffCompProperties_HealPermanentWounds = 0x20,
             /* HediffCompProperties_VerbGiver =             0x0, // This is never ticked by the heddifs, instead it is used by Armor Penetration and other calculations... Skipping */
             /* HediffCompProperties_DissolveGearOnDeath =   0x0, // This is never ticked aswell, it uses Notify_PawnDied instead... Skipping */
             /* HediffCompProperties_RecoveryThought =       0x0, // This is never ticked, instead called on removal of Hediff CompPostPostRemoved()... Skipping */
-            HediffCompProperties_MessageAfterTicks =        0x40,
-            HediffCompProperties_GrowthMode =               0x80,
+            HediffCompProperties_MessageAfterTicks = 0x40,
+            HediffCompProperties_GrowthMode = 0x80,
             /* HediffCompProperties_GetsPermanent =         0x0, // This is never ticked aswell, instead called by PreFinalizeInjury by the DamageWorker... Skipping */
-            HediffCompProperties_Infecter =                 0x100,
-            HediffCompProperties_KillAfterDays =            0x200,
-            HediffCompProperties_CauseMentalState =         0x400,
-            HediffCompProperties_SelfHeal =                 0x800
+            HediffCompProperties_Infecter = 0x100,
+            HediffCompProperties_KillAfterDays = 0x200,
+            HediffCompProperties_CauseMentalState = 0x400,
+            HediffCompProperties_SelfHeal = 0x800
         };
 
         public static void PopulateHediffEnumDB()
@@ -157,7 +157,7 @@ namespace Rim73
                     // So we have to compensate for that.
                     // 0.7f because we also tick it every 300 ticks outside of the 1000 ticks cycles
                     // 0.7f = (60000 / 300)[200] - (60000 / 1000)[60] (because we tick 60 times a day) / (60000 / 300)[200]
-                    float severityDiff = (((hediff.Severity - preTickSeverity) * 300f) * (1f / 60f)) * (1f - (20f/60f)) * 0.7f;
+                    float severityDiff = (((hediff.Severity - preTickSeverity) * 300f) * (1f / 60f)) * (1f - (20f / 60f)) * 0.7f;
                     hediff.Severity += severityDiff;
 
                 }
@@ -176,7 +176,7 @@ namespace Rim73
 
                 if (!Hediff_BitMask.TryGetValue(hediff.def.defName, out hediffFlag))
                     continue;
-                    
+
                 if (IsHediffType(ref hediffFlag, HediffCompProps.HediffCompProperties_CauseMentalState))
                 {
                     // Simple tick, nothing more
@@ -228,14 +228,14 @@ namespace Rim73
             {
                 Hediff hediff = hediffs[index];
                 int hediffFlag = 0;
-                
+
                 // HediffGivers
                 // HediffGivers
                 // This is for Hypothermia, Bleeding and Heatstroke
                 // They tick 5 times slower now...
                 //Log.Warning("=============");
                 //Log.Warning(pawn.ToString());
-                
+
                 for (int i = 0; i < sizeGiversSet; i++)
                 {
                     List<HediffGiver> hediffGivers = hediffGiverSets[i].hediffGivers;
@@ -243,11 +243,11 @@ namespace Rim73
 
                     for (int j = 0; j < sizeHediffGivers; j++)
                     {
-                        if(hediffGivers[j].hediff.defName == hediff.def.defName)
+                        if (hediffGivers[j].hediff.defName == hediff.def.defName)
                         {
                             float preSev = hediff.Severity;
                             hediffGivers[j].OnIntervalPassed(pawn, (Hediff)null);
-                                
+
                             if (pawn.Dead)
                                 return;
 
@@ -387,7 +387,7 @@ namespace Rim73
 
                 int thingId = ___pawn.thingIDNumber;
                 //int ticks = Find.TickManager.TicksGame;
-                int ticks = Rim73.Ticks;
+                int ticks = Find.TickManager.TicksGame;
                 int hash = ticks + thingId;
 
                 // This takes advantage of memory location and CPU cache by ticking the same data multiple times

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<!-- settings -->
+	<rim73_settings>최적화 설정</rim73_settings>
+	<rim73_settings_experimental>실험적 최적화</rim73_settings_experimental>
+	<rim73_settings_misc>기타</rim73_settings_misc>
+	
+	<rim73_hediff>헤디프 최적화 활성화</rim73_hediff>
+	<rim73_mood>무드 최적화 활성화</rim73_mood>
+	<rim73_needs>욕구 최적화 활성화</rim73_needs>
+	<rim73_pather>길찾기 최적화 활성화</rim73_pather>
+	<rim73_jobs>작업 최적화 활성화</rim73_jobs>
+	<rim73_mindstate>정신상태 최적화 활성화</rim73_mindstate>
+	<rim73_regionCache>길찾기 리전 캐싱 시스템 (실험적) 활성화 </rim73_regionCache>
+	<rim73_enemiesNearbyCache>근처의 적 캐싱 시스템 (실험적) 활성화</rim73_enemiesNearbyCache>
+	<rim73_enemies>적 연산 가속 시스템 (실험적) 활성화</rim73_enemies>
+	<rim73_superSpeed>초고속 게임워프 활성화</rim73_superSpeed>
+	
+	<rim73_hediff_note>헤디프와 건강 연산을 캐싱하고 가속합니다.</rim73_hediff_note>
+	<rim73_mood_note>기분 연산을 가속합니다.</rim73_mood_note>
+	<rim73_needs_note>욕구 연산 주기를 늘려 성능을 가속합니다.</rim73_needs_note>
+	<rim73_pather_note>길찾기 연산을 최적화하여 성능을 가속합니다.</rim73_pather_note>
+	<rim73_jobs_note>작업 연산을 최적화하여 성능을 가속합니다.</rim73_jobs_note>
+	<rim73_mindstate_note>정신상태 연산을 최적화하여 성능을 가속합니다.</rim73_mindstate_note>
+	<rim73_regionCache_note>길찾기 리전을 캐싱하여 성능을 가속합니다.</rim73_regionCache_note>
+	<rim73_enemiesNearbyCache_note>근처의 적에 대한 캐싱을 활성화합니다. 즉, 침입자 그룹의 한 폰이 적에게 가까이 있으면 근처 다른 폰의 중복 연산을 스킵합니다.</rim73_enemiesNearbyCache_note>
+	<rim73_enemies_note>강제로 적 폰의 틱 시스템을 덮어씁니다. 공격 이외의 대부분의 연산은 스킵됩니다.</rim73_enemies_note>
+	<rim73_superSpeed_note>4배속을 초당 9000틱으로 아주아주 빠르게 만듭니다. Smart Speed가 있으면 1200틱으로 제한됩니다.</rim73_superSpeed_note>
+	
+</LanguageData>

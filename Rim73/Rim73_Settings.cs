@@ -13,10 +13,11 @@ namespace Rim73
         public static bool mindstate = true;
         public static bool regionCache = true;
         public static bool enemiesNearbyCache = true;
+        public static bool enemies = false;
         public static bool warpSpeed = false;
 
         private static Vector2 ScrollPos = Vector2.zero;
-       
+
         public static void DoSettingsWindowContents(Rect inRect)
         {
             Listing_Standard listing_Standard = new Listing_Standard();
@@ -42,6 +43,7 @@ namespace Rim73
             listing_Standard.GapLine();
             listing_Standard.CheckboxLabeled("rim73_regionCache".Translate(), ref regionCache, "rim73_regionCache_note".Translate());
             listing_Standard.CheckboxLabeled("rim73_enemiesNearbyCache".Translate(), ref enemiesNearbyCache, "rim73_enemiesNearbyCache_note".Translate());
+            listing_Standard.CheckboxLabeled("rim73_enemies".Translate(), ref enemies, "rim73_enemies_note".Translate());
 
             listing_Standard.Gap(36);
             listing_Standard.Label("rim73_settings_misc".Translate());
@@ -72,6 +74,7 @@ namespace Rim73
             Scribe_Values.Look(ref regionCache, "rim73_regionCache", true, false);
             Scribe_Values.Look(ref enemiesNearbyCache, "rim73_enemiesNearbyCache", true, false);
             Scribe_Values.Look(ref warpSpeed, "rim73_superSpeed", false, false);
+            Scribe_Values.Look(ref enemies, "rim73_enemies", false, false);
         }
     }
 }
